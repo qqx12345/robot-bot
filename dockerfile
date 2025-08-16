@@ -1,5 +1,5 @@
 # 使用官方 Golang 镜像作为构建环境
-FROM golang:1.21 as builder
+FROM golang:1.24.5-alpine AS builder
 
 # 设置工作目录
 WORKDIR /robot-bot
