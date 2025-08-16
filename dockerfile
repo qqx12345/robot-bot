@@ -2,7 +2,7 @@
 FROM golang:1.21 as builder
 
 # 设置工作目录
-WORKDIR /robot
+WORKDIR /robot-bot
 
 # 复制 go.mod 和 go.sum 文件
 COPY go.mod go.sum ./

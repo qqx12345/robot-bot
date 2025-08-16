@@ -15,16 +15,16 @@ jobs:
           key: ${{ secrets.KEY }} # 服务器私钥
           port: 22
           script: |
-            cd /usr/local/robot
+            cd /usr/local/robot-bot
             git checkout . && git pull || { echo "❌ 拉取代码失败"; exit 1; }
-            docker ps -a --format '{{.Names}}' | grep -w myblog && docker stop myblog && docker rm myblog || echo "ℹ️ 容器 myblog 不存在，跳过"
+            docker ps -a --format '{{.Names}}' | grep -w robot && docker stop robot && docker rm robot || echo "ℹ️ 容器 robot 不存在，跳过"
 
             # 构建镜像并验证
             docker build -t myapp:v1 . || { echo "❌ 构建失败"; exit 1; }
             docker images | grep myapp || { echo "❌ 镜像不存在"; exit 1; }
 
             # 启动容器
-            docker run -d -p 80:80 -p 443:443 --name myblog myapp:v1 || { echo "❌ 运行失败"; exit 1; }
+            docker run -d -p 8080:8080 --name robot myapp:v1 || { echo "❌ 运行失败"; exit 1; }
             echo "✅ 部署完成"
             # 删除旧镜像
             docker image prune -a || echo "ℹ️ 没有旧镜像需要删除"
