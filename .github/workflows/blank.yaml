@@ -15,17 +15,29 @@ jobs:
           key: ${{ secrets.KEY }} # 服务器私钥
           port: 22
           script: |
+            PROJECT_NAME="robot-bot"
+            COMPOSE_FILE="docker-compose.yml"
+
             cd /usr/local/robot-bot
             git checkout . && git pull || { echo "❌ 拉取代码失败"; exit 1; }
-            docker ps -a --format '{{.Names}}' | grep -w robot && docker stop robot && docker rm robot || echo "ℹ️ 容器 robot 不存在，跳过"
+            echo "🛑 停止旧容器..."
+            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE down --timeout 30 || echo "⚠️ 无旧容器可停止"
 
-            # 构建镜像并验证
-            docker build -t myapp:v1 . || { echo "❌ 构建失败"; exit 1; }
-            docker images | grep myapp || { echo "❌ 镜像不存在"; exit 1; }
+            echo "🔨 构建新镜像..."
+            docker compose -f $COMPOSE_FILE build --no-cache || {
+                echo "❌ 构建失败";
+                exit 1;
+            }
 
-            # 启动容器
-            docker run -d -p 8080:8080 --name robot myapp:v1 || { echo "❌ 运行失败"; exit 1; }
-            echo "✅ 部署完成"
-            # 删除旧镜像
-            docker image prune -a || echo "ℹ️ 没有旧镜像需要删除"
+            echo "🚀 启动新版本..."
+            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE up -d --force-recreate --remove-orphans || {
+                echo "❌ 启动失败";
+                exit 1;
+            }
+
+            echo "🧹 清理旧镜像..."
+            docker images --filter "reference=*${PROJECT_NAME}*" --format "{{.ID}} {{.Tag}}" | \
+                sort -rn | awk 'NR>2 {print $1}' | \
+                xargs --no-run-if-empty docker rmi -f || \
+                echo "⚠️ 无旧镜像可清理"
     
