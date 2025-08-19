@@ -1,9 +1,12 @@
 package main
 
 import (
-	"net/http"
-	"io"
 	"encoding/json"
+	"io"
+	"log"
+	"net/http"
+
+	"github.com/robot/src/chat"
 	"github.com/robot/src/sign"
 )
 
@@ -19,19 +22,19 @@ type HandlerFunc func(data map[string]interface{}) (interface{}, error)
 
 var handlers = map[int]HandlerFunc{
 	13: sign.Sign,
+    0: chat.Chat,
 }
 
 func app(writer http.ResponseWriter, request *http.Request) {
     httpBody, _ := io.ReadAll(request.Body)
 
     defer request.Body.Close()
-
+    log.Printf("%s",string(httpBody))
     payload := &Payload{}
     if err := json.Unmarshal(httpBody, payload); err != nil {
         http.Error(writer, "解析JSON失败", http.StatusBadRequest)
         return
     }
-	
 	res,err:= handlers[payload.OP](payload.D)
     if err != nil {
         http.Error(writer, "中间件失败", http.StatusBadRequest)

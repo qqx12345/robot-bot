@@ -35,9 +35,9 @@ jobs:
                 exit 1;
             }
 
-            echo "🧹 清理旧镜像..."
-            docker images --filter "reference=*${PROJECT_NAME}*" --format "{{.ID}} {{.Tag}}" | \
-                sort -rn | awk 'NR>2 {print $1}' | \
-                xargs --no-run-if-empty docker rmi -f || \
-                echo "⚠️ 无旧镜像可清理"
+            echo "🧹 清理所有不在运行的镜像..."
+            # 删除所有不在运行的容器
+            docker container prune -f || echo "⚠️ 无容器可清理"
+            # 删除所有未被使用的镜像（包括悬空镜像和未被容器使用的镜像）
+            docker image prune -a -f --filter "until=24h" || echo "⚠️ 无镜像可清理"
     
