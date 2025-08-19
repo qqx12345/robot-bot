@@ -3,6 +3,8 @@ services:
   
   app:
     build: .
+    environment:
+      - BOTSECRET=${BOTSECRET}
     restart: unless-stopped
 
   nginx:
