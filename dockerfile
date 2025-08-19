@@ -12,6 +12,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o myapp .
 
 FROM alpine:latest
 
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
