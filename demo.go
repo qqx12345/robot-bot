@@ -3,11 +3,8 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
-
-	"github.com/robot/src/chat"
-	"github.com/robot/src/sign"
+	"github.com/robot/src"
 )
 
 type Payload struct {
@@ -21,15 +18,15 @@ type Payload struct {
 type HandlerFunc func(data map[string]interface{}) (interface{}, error)
 
 var handlers = map[int]HandlerFunc{
-	13: sign.Sign,
-    0: chat.Chat,
+	13: src.Sign,
+    0: src.Chat,
 }
 
 func app(writer http.ResponseWriter, request *http.Request) {
     httpBody, _ := io.ReadAll(request.Body)
 
     defer request.Body.Close()
-    log.Printf("%s",string(httpBody))
+    src.Getoken()
     payload := &Payload{}
     if err := json.Unmarshal(httpBody, payload); err != nil {
         http.Error(writer, "解析JSON失败", http.StatusBadRequest)
