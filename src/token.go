@@ -17,7 +17,7 @@ type token struct {
 func Getoken () (string) {
 	data:=map[string]string {
 		"appId":os.Getenv("APPID"),
-		"clientSecret":os.Getenv("CLIENTSECRET"),
+		"clientSecret":os.Getenv("BOTSECRET"),
 	}
 	jsonValue, _ := json.Marshal(data)
 	req,err:=http.NewRequest("POST","https://bots.qq.com/app/getAppAccessToken",bytes.NewBuffer(jsonValue))
