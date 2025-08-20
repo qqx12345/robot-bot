@@ -5,6 +5,7 @@ services:
     build: .
     environment:
       - BOTSECRET=${BOTSECRET}
+      - APPID=${APPID}
     restart: unless-stopped
 
   nginx:
