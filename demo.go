@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"github.com/robot/src"
+    "log"
 )
 
 type Payload struct {
@@ -24,9 +25,8 @@ var handlers = map[int]HandlerFunc{
 
 func app(writer http.ResponseWriter, request *http.Request) {
     httpBody, _ := io.ReadAll(request.Body)
-
+    log.Printf("Chat data:\n%s", string(httpBody))
     defer request.Body.Close()
-    src.Getoken()
     payload := &Payload{}
     if err := json.Unmarshal(httpBody, payload); err != nil {
         http.Error(writer, "解析JSON失败", http.StatusBadRequest)
