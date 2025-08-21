@@ -33,7 +33,7 @@ func Chat(data map[string]interface{},ID string) {
 	client:=&http.Client{}
 	_, err = client.Do(req)
 	if err != nil {
-        log.Fatal("请求失败: %v", err)
+        log.Printf("请求失败: %v", err)
     }
 	
 
