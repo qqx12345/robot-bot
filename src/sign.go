@@ -9,19 +9,10 @@ import (
 	"os"
 )
 
-func getStringField(data map[string]interface{}, key string) string {
-	if val, exists := data[key]; exists {
-		if str, ok := val.(string); ok {
-			return str
-		}
-	}
-	return "" // 返回空字符串作为默认值
-}
+func Sign(data map[string]interface{},ID string,T string) (interface{}, error) {
 
-func Sign(data map[string]interface{}) (interface{}, error) {
-
-	plain_token:= getStringField(data, "plain_token")
-	event_ts:= getStringField(data, "event_ts")
+	plain_token:= data["plain_token"].(string)
+	event_ts:= data["event_ts"].(string)
 	seed := os.Getenv("BOTSECRET")
 	for len(seed) < ed25519.SeedSize {
 		seed = strings.Repeat(seed, 2)

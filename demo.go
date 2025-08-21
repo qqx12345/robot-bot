@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"github.com/robot/src"
+    "github.com/robot/src/message"
     "log"
 )
 
@@ -16,11 +17,11 @@ type Payload struct {
     T  string
 }
 
-type HandlerFunc func(data map[string]interface{}) (interface{}, error)
+type HandlerFunc func(data map[string]interface{},ID string,T string) (interface{}, error)
 
 var handlers = map[int]HandlerFunc{
 	13: src.Sign,
-    0: src.Chat,
+    0: message.Message,
 }
 
 func app(writer http.ResponseWriter, request *http.Request) {
@@ -32,7 +33,7 @@ func app(writer http.ResponseWriter, request *http.Request) {
         http.Error(writer, "解析JSON失败", http.StatusBadRequest)
         return
     }
-	res,err:= handlers[payload.OP](payload.D)
+	res,err:= handlers[payload.OP](payload.D,payload.ID,payload.T)
     if err != nil {
         http.Error(writer, "中间件失败", http.StatusBadRequest)
         return
