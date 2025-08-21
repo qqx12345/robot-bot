@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"log"
 	"github.com/robot/src/token"
+	"io"
 )
 
 func Chat(data map[string]interface{},ID string) {
@@ -31,10 +32,13 @@ func Chat(data map[string]interface{},ID string) {
 	req.Header.Set("Content-Type", "application/json")
 
 	client:=&http.Client{}
-	_, err = client.Do(req)
+	res, err := client.Do(req)
+	resq,_:=io.ReadAll(res.Body)
+	defer res.Body.Close()
 	if err != nil {
         log.Printf("请求失败: %v", err)
-    }
-	
+    }else {
+		log.Printf("响应内容: %s", string(resq)) 
+	}
 
 }
