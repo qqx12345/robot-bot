@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"time"
 	"sync"
+	"strconv"
 )
 
 type Token struct {
@@ -68,11 +69,14 @@ func (tm *Token) refresh () (string, time.Time) {
 
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
-	var result map[string]interface{}
+	var result map[string]string
 	json.Unmarshal(body, &result)
-
-	accessToken := result["access_token"].(string)
-	endtime := curtime.Add(time.Duration(result["expires_in"].(int)-60)*time.Second)
+	accessToken := result["access_token"]
+	num, err := strconv.Atoi(result["expires_in"])
+	if err!=nil {
+		log.Printf("转换错误: %v", err)
+	}
+	endtime := curtime.Add(time.Duration(num-60)*time.Second)
 
 	return accessToken,endtime
 }
