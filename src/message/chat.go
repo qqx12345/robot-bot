@@ -28,7 +28,7 @@ func Chat(data map[string]interface{},ID string) {
 	if err != nil {
 		log.Printf("创建请求失败: %v", err)
 	}
-	req.Header.Set("Authorization",token.QQtoken.GetToken())
+	req.Header.Set("Authorization","QQBot "+token.QQtoken.GetToken())
 	req.Header.Set("Content-Type", "application/json")
 
 	client:=&http.Client{}
