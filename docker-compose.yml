@@ -6,6 +6,7 @@ services:
     environment:
       - BOTSECRET=${BOTSECRET}
       - APPID=${APPID}
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY}
     restart: unless-stopped
 
   nginx:

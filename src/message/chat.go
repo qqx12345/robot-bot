@@ -14,6 +14,7 @@ func Chat(data map[string]interface{},ID string) {
 	content:=data["content"].(string)
 	id:=data["id"].(string)
 	openid:=data["author"].(map[string]interface{})["user_openid"].(string)
+	content=Qwen(content)
 	body:=map[string]interface{}{
 		"content":content,
 		"msg_id":id,
