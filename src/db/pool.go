@@ -5,6 +5,7 @@ import (
 	"errors"
 	"sync"
 	"github.com/milvus-io/milvus/client/v2/milvusclient"
+	"github.com/milvus-io/milvus/client/v2/entity"
 	"os"
 	"log"
 )
@@ -29,6 +30,7 @@ func init(){
     } else {
         log.Printf("连接池初始化成功")
     }    
+	GlobalPool.initcollections("demo_collection")
 }
 
 func Newpool(size int)(*Pool ,error) {
@@ -111,4 +113,50 @@ func factory() (*milvusclient.Client, error) {
         return nil, err
     }
     return client, nil
+}
+
+func (p *Pool) initcollections(CollectionName string) {
+	client,err:=GlobalPool.Get()
+	if err!=nil {
+		log.Printf("连接获取失败：%v",err)
+	}
+	defer GlobalPool.Put(client)
+	
+	has, err := client.HasCollection(p.ctx, milvusclient.NewHasCollectionOption(CollectionName))
+	if err!=nil {
+		log.Printf("查找collections失败：%v",err)
+	}
+	if has {
+		return
+	}
+
+	schema := entity.NewSchema().
+    WithField(entity.NewField().WithName("id").
+        WithDataType(entity.FieldTypeInt64).
+        WithIsPrimaryKey(true).
+        WithIsAutoID(true),
+    ).
+    WithField(entity.NewField().WithName("user_openid").
+        WithDataType(entity.FieldTypeVarChar).
+        WithMaxLength(200),
+    ).
+    WithField(entity.NewField().WithName("role").
+        WithDataType(entity.FieldTypeVarChar).
+		WithMaxLength(20),
+    ).
+    WithField(entity.NewField().WithName("text").
+        WithDataType(entity.FieldTypeVarChar).
+        WithMaxLength(2000).
+        WithEnableAnalyzer(true),
+    ).
+    WithField(entity.NewField().WithName("text_dense_vector").
+        WithDataType(entity.FieldTypeFloatVector).
+        WithDim(512),
+    )
+
+	err = client.CreateCollection(p.ctx, milvusclient.NewCreateCollectionOption(CollectionName, schema))
+	if err !=nil {
+		log.Printf("创建collections失败：%v",err)
+	}
+	log.Printf("创建collections成功")
 }
