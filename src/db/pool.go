@@ -5,6 +5,8 @@ import (
 	"errors"
 	"sync"
 	"github.com/milvus-io/milvus/client/v2/milvusclient"
+	"os"
+	"log"
 )
 
 //milvus连接池
@@ -17,7 +19,19 @@ type Pool struct {
 	mu sync.Mutex
 }
 
-func Newpool(factory func() (*milvusclient.Client,error), size int)(*Pool ,error) {
+var GlobalPool *Pool 
+
+func init(){
+	var err error
+	GlobalPool,err = Newpool(10)
+    if err != nil {
+        log.Printf("连接池初始化失败: %v", err)
+    } else {
+        log.Printf("连接池初始化成功")
+    }    
+}
+
+func Newpool(size int)(*Pool ,error) {
 	if size<=0 {
 		return nil, errors.New("invalid size")
 	}
@@ -85,4 +99,16 @@ func (p *Pool) Put(conn *milvusclient.Client) error {
 	default:
 		return conn.Close(p.ctx)
 	}
+}
+
+
+func factory() (*milvusclient.Client, error) {
+    ctx := context.Background()
+    client, err := milvusclient.New(ctx, &milvusclient.ClientConfig{
+        Address:  os.Getenv("MILVUS_ADDRESS"),
+    })
+    if err != nil {
+        return nil, err
+    }
+    return client, nil
 }
