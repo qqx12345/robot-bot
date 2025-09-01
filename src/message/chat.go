@@ -20,10 +20,7 @@ func Chat(data map[string]interface{},ID string) {
 		"msg_id":id,
 		"msg_type":0,
 	}
-	jsonValue, err := json.Marshal(body)
-	if err != nil {
-		log.Printf("JSON序列化失败: %v", err)
-	}
+	jsonValue, _ := json.Marshal(body)
     url := "https://api.sgroup.qq.com/v2/users/" + path.Join(openid, "messages")
 	req,err:=http.NewRequest("POST",url,bytes.NewBuffer(jsonValue))
 	if err != nil {

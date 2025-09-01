@@ -1,13 +1,20 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
+	"os"
+
+	"github.com/milvus-io/milvus/client/v2/milvusclient"
 	"github.com/robot/src"
-    "github.com/robot/src/message"
-    "log"
+	"github.com/robot/src/db"
+	"github.com/robot/src/message"
 )
+
+var GlobalPool *db.Pool
 
 type Payload struct {
     ID string
@@ -43,7 +50,34 @@ func app(writer http.ResponseWriter, request *http.Request) {
 	json.NewEncoder(writer).Encode(res)
 }
 
+func factory() (*milvusclient.Client, error) {
+    ctx := context.Background()
+    client, err := milvusclient.New(ctx, &milvusclient.ClientConfig{
+        Address:  os.Getenv("MILVUS_ADDRESS"),
+    })
+    if err != nil {
+        return nil, err
+    }
+    return client, nil
+}
+
 func main() {
-	http.HandleFunc("/",app)
+    var err error
+    GlobalPool,err = db.Newpool(factory, 10)
+    if err != nil {
+        log.Printf("连接池初始化失败: %v", err)
+    } else {
+        log.Printf("连接池初始化成功")
+    }
+    
+    // 在程序退出时关闭连接池
+    defer func() {
+        if GlobalPool != nil {
+            GlobalPool.Close()
+            log.Printf("连接池已关闭")
+        }
+    }()
+    
+	http.HandleFunc("/", app)
 	http.ListenAndServe(":2345", nil)
 }
