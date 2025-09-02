@@ -17,7 +17,7 @@ func Qwen(data string) string {
 		context.TODO(), openai.ChatCompletionNewParams{
 			Messages: openai.F(
 				[]openai.ChatCompletionMessageParamUnion{
-					openai.SystemMessage("你是一个专业的AI助手，擅长用中文回答问题。请保持回答简洁、准确、友好。"),
+					openai.SystemMessage("你是一个专业的AI助手,擅长用中文回答问题,请务必只用纯文本回答,不要使用Markdown、代码块或格式化符号且字数不超过300字。"),
 					openai.UserMessage(data),
 				},
 			),

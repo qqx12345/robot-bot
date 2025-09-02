@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"log"
 	"github.com/robot/src/token"
+	"github.com/robot/src/db"
 	"io"
 )
 
@@ -14,12 +15,27 @@ func Chat(data map[string]interface{},ID string) {
 	content:=data["content"].(string)
 	id:=data["id"].(string)
 	openid:=data["author"].(map[string]interface{})["user_openid"].(string)
-	content=Qwen(content)
+
+    vector_usr:=Vector(content)
+
+	content_llm:=Qwen(content)
 	body:=map[string]interface{}{
-		"content":content,
+		"content":content_llm,
 		"msg_id":id,
 		"msg_type":0,
 	}
+
+	vector_llm:=Vector(content_llm)
+
+    insert_data:=map[string]interface{}{
+		"text":[]string{content,content_llm},
+		"open_id":[]string{openid,openid},
+		"role":[]string{"user","AI"},
+		"vector":[][]float32{vector_usr,vector_llm},
+	}
+
+    db.Insert(insert_data)
+
 	jsonValue, _ := json.Marshal(body)
     url := "https://api.sgroup.qq.com/v2/users/" + path.Join(openid, "messages")
 	req,err:=http.NewRequest("POST",url,bytes.NewBuffer(jsonValue))
