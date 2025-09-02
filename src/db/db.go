@@ -8,7 +8,9 @@ import (
 	"fmt"
 )
 
-// func Query(open_id string,queryVector []float32,role string) {
+// type Querydata struct {Role, Text string}
+
+// func Query(open_id string,queryVector []float32,role string) []Querydata {
 // 	client,err:=GlobalPool.Get()
 // 	if err!=nil {
 // 		log.Printf("连接获取失败：%v",err)
@@ -25,7 +27,14 @@ import (
 // 	if err != nil {
 //         fmt.Println(err.Error())
 //     }
-
+// 	back := []Querydata{}
+// 	for _, resultSet := range resultSets {
+// 		text:=resultSet.GetColumn("text").FieldData().GetScalars()
+// 		role:=resultSet.GetColumn("role").FieldData().GetScalars()
+// 		fmt.Println("text: ", text)
+// 		fmt.Println("role: ", role)
+//     }
+// 	return back
 // }
 
 func Insert(data map[string]interface{}) {
