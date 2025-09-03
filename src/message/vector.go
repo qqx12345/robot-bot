@@ -43,6 +43,5 @@ func Vector(data string) []float32{
 	}
 	json.Unmarshal(body, &result)
 	embedding := result.Data[0].Embedding
-	fmt.Println(embedding)
 	return embedding
 }
