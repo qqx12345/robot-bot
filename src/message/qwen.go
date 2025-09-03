@@ -6,9 +6,10 @@ import (
 
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
+	"github.com/robot/src/db"
 )
 
-func Qwen(data string) string {
+func Qwen(data string,back_info []db.Querydata) string {
 	client := openai.NewClient(
 		option.WithAPIKey(os.Getenv("DASHSCOPE_API_KEY")),
 		option.WithBaseURL("https://dashscope.aliyuncs.com/compatible-mode/v1/"),

@@ -11,7 +11,9 @@ func Chat(data map[string]interface{},ID string) {
 
     vector_usr:=Vector(content)
 
-	content_llm:=Qwen(content)
+	back_info:=db.Query(openid,vector_usr)
+
+	content_llm:=Qwen(content,back_info)
 
 	go func(){
 		SendToQQ(content_llm,id,openid)

@@ -10,7 +10,7 @@ import (
 
 type Querydata struct {Role, Text string}
 
-func Query(open_id string,queryVector []float32,role string) []Querydata {
+func Query(open_id string,queryVector []float32) []Querydata {
 	client,err:=GlobalPool.Get()
 	if err!=nil {
 		log.Printf("连接获取失败：%v",err)
