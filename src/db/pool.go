@@ -159,4 +159,12 @@ func (p *Pool) initcollections(CollectionName string) {
 		log.Printf("创建collections失败：%v",err)
 	}
 	log.Printf("创建collections成功")
+	loadTask, err := client.LoadCollection(p.ctx, milvusclient.NewLoadCollectionOption("demo_collection"))
+	if err != nil {
+		log.Println(err.Error())
+	}
+	err = loadTask.Await(p.ctx)
+	if err != nil {
+		log.Println(err.Error())
+	}
 }
