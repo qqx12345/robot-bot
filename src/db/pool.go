@@ -6,7 +6,7 @@ import (
 	"sync"
 	"github.com/milvus-io/milvus/client/v2/milvusclient"
 	"github.com/milvus-io/milvus/client/v2/entity"
-
+    "github.com/milvus-io/milvus/client/v2/index"
 	"os"
 	"log"
 )
@@ -164,6 +164,12 @@ func (p *Pool) initcollections(CollectionName string) {
 	}
 	log.Printf("创建collections成功")
 
+    idx := index.NewIvfFlatIndex(entity.L2, 512)
+	option := milvusclient.NewCreateIndexOption(CollectionName, "text_dense_vector", idx)
+    _, err = client.CreateIndex(p.ctx, option)
+	if err != nil {
+		log.Printf("创建索引失败")
+    }
 	loadTask, err := client.LoadCollection(p.ctx, milvusclient.NewLoadCollectionOption(CollectionName))
 	if err != nil {
 		log.Println(err.Error())
