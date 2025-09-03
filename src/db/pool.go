@@ -6,6 +6,7 @@ import (
 	"sync"
 	"github.com/milvus-io/milvus/client/v2/milvusclient"
 	"github.com/milvus-io/milvus/client/v2/entity"
+
 	"os"
 	"log"
 )
@@ -127,15 +128,10 @@ func (p *Pool) initcollections(CollectionName string) {
 		log.Printf("查找collections失败：%v",err)
 	}
 	if has {
-		loadTask, err := client.LoadCollection(p.ctx, milvusclient.NewLoadCollectionOption(CollectionName))
+		err = client.DropCollection(p.ctx, milvusclient.NewDropCollectionOption(CollectionName))
 		if err != nil {
 			log.Println(err.Error())
 		}
-		err = loadTask.Await(p.ctx)
-		if err != nil {
-			log.Println(err.Error())
-		}
-		return
 	}
 
 	schema := entity.NewSchema().
@@ -167,6 +163,7 @@ func (p *Pool) initcollections(CollectionName string) {
 		log.Printf("创建collections失败：%v",err)
 	}
 	log.Printf("创建collections成功")
+
 	loadTask, err := client.LoadCollection(p.ctx, milvusclient.NewLoadCollectionOption(CollectionName))
 	if err != nil {
 		log.Println(err.Error())
