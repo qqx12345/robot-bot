@@ -35,7 +35,8 @@ func Query(openID string, queryVector []float32) []Querydata {
 		[]entity.Vector{entity.FloatVector(queryVector)},
 	).WithConsistencyLevel(entity.ClStrong).
 		WithANNSField("text_dense_vector").
-		WithFilter(fmt.Sprintf("user_openid == \"%s\"", openID)))
+		WithFilter(fmt.Sprintf("user_openid == \"%s\"", openID)).
+		WithOutputFields("text", "role"))
 
 	// 3. 检查搜索结果错误
 	if err != nil {
@@ -80,8 +81,6 @@ func Query(openID string, queryVector []float32) []Querydata {
 			continue
 		}
 
-		// 将结果添加到返回列表
-		// 注意：这里应该根据实际的字段类型和数据结构进行适当的类型转换
 		fmt.Println("text: ", textScalars)
 		fmt.Println("role: ", roleScalars)
 	}
