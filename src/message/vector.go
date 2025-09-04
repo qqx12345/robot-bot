@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 )
@@ -41,7 +42,13 @@ func Vector(data string) []float32{
 			Embedding []float32 `json:"embedding"`
 		} `json:"data"`
 	}
+
 	json.Unmarshal(body, &result)
+
+	if len(result.Data) == 0 {
+		log.Println("暂无向量")
+		return nil
+	}
 	embedding := result.Data[0].Embedding
 	return embedding
 }
