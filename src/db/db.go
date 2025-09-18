@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-
 	"github.com/milvus-io/milvus/client/v2/entity"
 	"github.com/milvus-io/milvus/client/v2/milvusclient"
 )
@@ -45,7 +44,7 @@ func Query(openID string, queryVector []float32) []Querydata {
 	}
 
 	// 4. 检查结果集是否为空
-	if resultSets == nil || len(resultSets) == 0 {
+	if resultSets == nil {
 		log.Println("提示：未找到相关结果")
 		return []Querydata{}
 	}

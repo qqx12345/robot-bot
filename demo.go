@@ -30,10 +30,7 @@ func app(writer http.ResponseWriter, request *http.Request) {
     log.Printf("Chat data:\n%s", string(httpBody))
     defer request.Body.Close()
     payload := &Payload{}
-    if err := json.Unmarshal(httpBody, payload); err != nil {
-        http.Error(writer, "解析JSON失败", http.StatusBadRequest)
-        return
-    }
+    json.Unmarshal(httpBody, payload)
 	res,err:= handlers[payload.OP](payload.D,payload.ID,payload.T)
     if err != nil {
         http.Error(writer, "中间件失败", http.StatusBadRequest)

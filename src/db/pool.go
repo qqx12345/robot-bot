@@ -78,17 +78,29 @@ func (p *Pool) Get() (*milvusclient.Client,error) {
 	if p.close {
 		return nil,errors.New("pool is closed")
 	}
-	select {
-	    case conn := <-p.connections:
-			return conn,nil
-		default:
-			conn,err:=p.factory()
-			if err!=nil {
-				return nil,err
-			}
-			return conn,nil
+	for len(p.connections)>0 {
+		cli:=<-p.connections
+		err:=p.isHealthy(cli)
+		if err==nil{
+			return cli,nil
+		}
 	}
+	conn,err:=p.factory()
+	if err!=nil {
+		return nil,err
+	}
+	return conn,nil
 }
+
+func (p *Pool) isHealthy(cli *milvusclient.Client) error {
+    _, err := cli.ListCollections(p.ctx,milvusclient.NewListCollectionOption())
+    if err != nil {
+        return err
+    }
+    return nil
+}
+
+
 
 func (p *Pool) Put(conn *milvusclient.Client) error {
 	p.mu.Lock()
